@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mourad Labadi | Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb; /* Lighter gray */
+        }
+        .project-card {
+            display: flex; /* Use flexbox for better alignment */
+            flex-direction: column;
+        }
+        .timeline-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: white;
+            border-radius: 9999px;
+        }
+        .education-logo {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .modal {
+            transition: opacity 0.25s ease;
+        }
+        /* Animation styles */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Flip card styles */
+        .flip-card {
+            perspective: 1000px;
+            height: 100%;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+        /* Tooltip styles */
+        .tooltip {
+            position: relative;
+            border-bottom: 2px dotted #9ca3af;
+            cursor: help;
+        }
+        .tooltip:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 12px;
+            background-color: #1f2937;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 10;
+        }
+        .tooltip:hover:before {
+            opacity: 1;
+            visibility: visible;
+        }
+        /* Day in the life animation */
+        .workflow-step {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+    </style>
+</head>
+<body class="text-gray-700">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+                <span>Mourad Labadi</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#about" class="text-gray-600 hover:text-blue-600 transition duration-300">About</a>
+                <a href="#experience" class="text-gray-600 hover:text-blue-600 transition duration-300">Experience</a>
+                <a href="#skills" class="text-gray-600 hover:text-blue-600 transition duration-300">Skills</a>
+                <a href="#projects" class="text-gray-600 hover:text-blue-600 transition duration-300">Projects</a>
+                <a href="#contact" class="text-gray-600 hover:text-blue-600 transition duration-300">Contact</a>
+                <a href="#" class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">Download CV</a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-gray-800 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+             <a href="#about" class="block py-2 text-gray-600 hover:text-blue-600">About</a>
+             <a href="#experience" class="block py-2 text-gray-600 hover:text-blue-600">Experience</a>
+             <a href="#skills" class="block py-2 text-gray-600 hover:text-blue-600">Skills</a>
+             <a href="#projects" class="block py-2 text-gray-600 hover:text-blue-600">Projects</a>
+             <a href="#contact" class="block py-2 text-gray-600 hover:text-blue-600">Contact</a>
+             <a href="#" class="block mt-2 bg-blue-600 text-white text-center font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">Download CV</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-12">
+
+        <!-- Hero Section -->
+        <section id="home" class="text-center py-16 md:py-20 fade-in-section">
+            <img src="https://placehold.co/150x150/EBF4FF/3B82F6?text=ML" alt="Mourad Labadi" class="w-32 h-32 md:w-40 md:h-40 mx-auto rounded-full mb-6 shadow-lg border-4 border-white">
+            <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-4">Hi, I'm Mourad Labadi</h1>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+                Bridging Finance and Innovation, from Biotech to Global Business.
+            </p>
+             <div class="flex items-center justify-center gap-2 mt-4 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span>Berlin, Germany</span>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="py-20 bg-white rounded-xl shadow-md fade-in-section">
+            <div class="max-w-5xl mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center text-gray-900 mb-4 flex items-center justify-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 text-blue-600"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    About Me
+                </h2>
+                
+                <!-- Day in the Life Animation -->
+                <div id="workflow-animation" class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 my-12 text-center">
+                    <div class="workflow-step flex flex-col items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-blue-600"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+                        <span class="font-semibold">Data Analysis</span>
+                    </div>
+                    <div class="workflow-step text-gray-300 text-2xl hidden md:block">&rarr;</div>
+                    <div class="workflow-step flex flex-col items-center gap-2">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-blue-600"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                        <span class="font-semibold">Financial Modeling</span>
+                    </div>
+                     <div class="workflow-step text-gray-300 text-2xl hidden md:block">&rarr;</div>
+                    <div class="workflow-step flex flex-col items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-blue-600"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>
+                        <span class="font-semibold">Dashboard Building</span>
+                    </div>
+                     <div class="workflow-step text-gray-300 text-2xl hidden md:block">&rarr;</div>
+                    <div class="workflow-step flex flex-col items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-blue-600"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        <span class="font-semibold">Stakeholder Presentation</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <div class="md:col-span-2 text-lg text-gray-600 leading-relaxed">
+                        <ul class="space-y-4">
+                            <li class="flex gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-blue-500 flex-shrink-0 mt-1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                <span>Highly motivated and multilingual professional with a strong academic background in Accounting, Finance, and European Business Management.</span>
+                            </li>
+                             <li class="flex gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-blue-500 flex-shrink-0 mt-1"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+                                <span>Expertise in <span class="font-semibold text-blue-600 tooltip" data-tooltip="SAP FI/CO, LucaNet">financial operations</span>, <span class="font-semibold text-blue-600 tooltip" data-tooltip="rNPV Models">R&D valuation</span>, <span class="font-semibold text-blue-600 tooltip" data-tooltip="20-Year Forecasting">forecasting, financial planning</span>, and building <span class="font-semibold text-blue-600 tooltip" data-tooltip="Chart.js, HTML/CSS">interactive dashboards</span>.</span>
+                            </li>
+                             <li class="flex gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-blue-500 flex-shrink-0 mt-1"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                                <span>Experienced in designing and creating **custom applications** to solve specific business problems.</span>
+                            </li>
+                             <li class="flex gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-blue-500 flex-shrink-0 mt-1"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                                <span>Deep knowledge of **European Union politics** and cross-cultural business dynamics, with hands-on experience in public and private sectors.</span>
+                            </li>
+                        </ul>
+                         <div class="mt-8 bg-gray-50 p-4 rounded-lg relative">
+                             <div id="skill-cloud-tooltip" class="absolute bg-gray-800 text-white text-sm rounded py-1 px-2 pointer-events-none opacity-0 transition-opacity duration-300"></div>
+                            <h4 class="font-bold text-gray-800 mb-4 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-600"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m9 12 2 2 4-4"></path></svg>My Approach</h4>
+                            <div id="skill-cloud" class="flex flex-wrap items-center justify-center gap-4">
+                                <span class="skill-cloud-item text-xl text-blue-600 font-semibold cursor-pointer transition-transform hover:scale-110" data-description="Transforming complex data into clear, actionable insights.">Data-First</span>
+                                <span class="skill-cloud-item text-lg text-gray-700 font-semibold cursor-pointer transition-transform hover:scale-110" data-description="Building intuitive tools for stakeholders.">User-Centric</span>
+                                <span class="skill-cloud-item text-2xl text-blue-700 font-bold cursor-pointer transition-transform hover:scale-110" data-description="Automating processes to improve efficiency and accuracy.">Automation</span>
+                                <span class="skill-cloud-item text-md text-gray-600 font-semibold cursor-pointer transition-transform hover:scale-110" data-description="Clear communication to align teams and investors.">Stakeholder Communication</span>
+                                <span class="skill-cloud-item text-xl text-blue-600 font-semibold cursor-pointer transition-transform hover:scale-110" data-description="Applying strategic thinking to financial challenges.">Strategic Finance</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:col-span-1">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-blue-600"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
+                           Education
+                        </h3>
+                        <ul class="space-y-3 text-gray-600">
+                            <li class="flex gap-3"><img src="https://i.ibb.co/ZZXRW53/TH-Wildau-Logo.png" alt="TH Wildau Logo" class="education-logo"><span><b>M.A. European Business</b>, TH Wildau</span></li>
+                            <li class="flex gap-3"><img src="https://i.ibb.co/Ps54JL08/im-ages.png" alt="University of Lille Logo" class="education-logo"><span><b>M.A. European Affairs</b>, Univ. of Lille</span></li>
+                            <li class="flex gap-3"><img src="https://i.ibb.co/twRkT8Zf/20250131160351-file-3-Mgf-AI.png" alt="University of Algiers 3 Logo" class="education-logo"><span><b>M.Sc. Accounting</b>, Univ. of Algiers 3</span></li>
+                            <li class="flex gap-3"><img src="https://i.ibb.co/twRkT8Zf/20250131160351-file-3-Mgf-AI.png" alt="University of Algiers 3 Logo" class="education-logo"><span><b>B.Sc. Accounting & Finance</b>, Univ. of Algiers 3</span></li>
+                            <li class="flex gap-3"><img src="https://i.ibb.co/hR2PdVqB/image-s.jpg" alt="University of Algiers 2 Logo" class="education-logo"><span><b>B.A. English Literature</b>, Univ. of Algiers 2</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience" class="py-20 fade-in-section">
+            <h2 class="text-3xl font-bold text-center text-gray-900 mb-12 flex items-center justify-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 text-blue-600"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                Work Experience
+            </h2>
+            <div class="max-w-3xl mx-auto relative border-l-2 border-blue-200 pl-16">
+                <!-- Experience Item 1 -->
+                <div class="mb-12 experience-item group cursor-pointer p-4 -ml-4 rounded-lg hover:bg-blue-50 transition-colors" data-modal-target="pentixapharm-modal">
+                    <div class="absolute w-12 h-12 bg-white rounded-full -left-6 border-2 border-blue-200 flex items-center justify-center"><img src="https://i.ibb.co/TBmtHSV8/240212-Lo-go-PTP.webp" alt="Pentixapharm Logo" class="timeline-logo"></div>
+                    <p class="text-sm font-medium text-blue-600">2025 – Present</p>
+                    <h3 class="text-xl font-bold text-gray-900">Finance and Business Development</h3>
+                    <p class="text-md text-gray-600">Pentixapharm (Biotech, Berlin)</p>
+                    <span class="text-sm font-semibold text-blue-500 group-hover:text-blue-700 transition-colors mt-2 inline-block">View Achievements <span class="inline-block group-hover:translate-x-1 transition-transform">&rarr;</span></span>
+                </div>
+                <!-- Experience Item 2 -->
+                <div class="mb-12 experience-item group cursor-pointer p-4 -ml-4 rounded-lg hover:bg-blue-50 transition-colors" data-modal-target="crymirotech-modal">
+                     <div class="absolute w-12 h-12 bg-white rounded-full -left-6 border-2 border-blue-200 flex items-center justify-center"><img src="https://i.ibb.co/QgJhJG7/Capture-decran-2024-01-11-a-11-27-59.png" alt="CrymiTech Logo" class="timeline-logo"></div>
+                    <p class="text-sm font-medium text-blue-600">2023 – 2024</p>
+                    <h3 class="text-xl font-bold text-gray-900">Business Analyst</h3>
+                    <p class="text-md text-gray-600">CrymiTech (Cybersecurity & Blockchain, Lille)</p>
+                    <span class="text-sm font-semibold text-blue-500 group-hover:text-blue-700 transition-colors mt-2 inline-block">View Achievements <span class="inline-block group-hover:translate-x-1 transition-transform">&rarr;</span></span>
+                </div>
+                 <!-- Experience Item 3 -->
+                <div class="mb-12 experience-item group cursor-pointer p-4 -ml-4 rounded-lg hover:bg-blue-50 transition-colors" data-modal-target="embassy-modal">
+                    <div class="absolute w-12 h-12 bg-white rounded-full -left-6 border-2 border-blue-200 flex items-center justify-center"><img src="https://i.ibb.co/FLf4BxTZ/images-1.jpg" alt="Embassy of Serbia Logo" class="timeline-logo"></div>
+                    <p class="text-sm font-medium text-blue-600">2020 – 2023</p>
+                    <h3 class="text-xl font-bold text-gray-900">Financial Administrative Assistant</h3>
+                    <p class="text-md text-gray-600">Embassy of Serbia in Algeria</p>
+                    <span class="text-sm font-semibold text-blue-500 group-hover:text-blue-700 transition-colors mt-2 inline-block">View Achievements <span class="inline-block group-hover:translate-x-1 transition-transform">&rarr;</span></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills & Languages Section -->
+        <section id="skills" class="py-20 bg-white rounded-xl shadow-md fade-in-section">
+            <div class="max-w-5xl mx-auto px-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-16">
+                    <div>
+                        <h2 class="text-3xl font-bold text-center text-gray-900 mb-12 flex items-center justify-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 text-blue-600"><path d="M12 14l-4 6h8l-4-6Z"/><path d="m12 6 4 6H8l4-6Z"/><path d="M6 12l6-4 6 4"/><path d="M6 12l6 4 6-4"/></svg>
+                            Skills & Tools
+                        </h2>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-8 text-center">
+                            <div class="flex flex-col items-center gap-2 skill-item cursor-pointer" data-skill="Business Strategy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-blue-600"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="font-semibold">Business Dev</span></div>
+                            <div class="flex flex-col items-center gap-2 skill-item cursor-pointer" data-skill="Financial Modeling"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-blue-600"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg><span class="font-semibold">Financial Modeling</span></div>
+                            <div class="flex flex-col items-center gap-2 skill-item cursor-pointer" data-skill="Data Analysis"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-blue-600"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg><span class="font-semibold">Data Analysis</span></div>
+                            <div class="flex flex-col items-center gap-2 skill-item cursor-pointer" data-skill="Business Strategy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-blue-600"><path d="m7 11 2-2-2-2"/><path d="M11 13h4"/><path d="m17 11 2-2-2-2"/><path d="M14 19.5v-3.5a1.5 1.5 0 0 1 3 0v3.5"/><path d="M12 19.5v-15a1.5 1.5 0 0 0-3 0v15"/><path d="M4 19.5v-3.5a1.5 1.5 0 0 1 3 0v3.5"/></svg><span class="font-semibold text-center">Dynamic Interactive Presentations</span></div>
+                            <div class="flex flex-col items-center gap-2 skill-item cursor-pointer" data-skill="Business Strategy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-blue-600"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M12 11h4"></path><path d="M12 16h4"></path><path d="M8 11h.01"></path><path d="M8 16h.01"></path></svg><span class="font-semibold text-center">Project Management Tools</span></div>
+                            <div class="flex flex-col items-center gap-2 skill-item cursor-pointer" data-skill="Application Creation"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-blue-600"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg><span class="font-semibold text-center">Application Creation</span></div>
+                        </div>
+                    </div>
+                     <div>
+                        <h2 class="text-3xl font-bold text-center text-gray-900 mb-12 flex items-center justify-center gap-3">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 text-blue-600"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+                            Languages
+                        </h2>
+                        <div class="grid grid-cols-1 gap-8 text-center">
+                            <div class="flex flex-col items-center gap-2"><img src="https://flagcdn.com/dz.svg" class="h-10 w-auto rounded"><span class="font-semibold">Arabic (Native)</span></div>
+                            <div class="flex flex-col items-center gap-2"><img src="https://flagcdn.com/fr.svg" class="h-10 w-auto rounded"><span class="font-semibold">French (Native)</span></div>
+                            <div class="flex flex-col items-center gap-2"><img src="https://flagcdn.com/gb.svg" class="h-10 w-auto rounded"><span class="font-semibold">English (Fluent)</span></div>
+                            <div class="flex flex-col items-center gap-2"><img src="https://flagcdn.com/de.svg" class="h-10 w-auto rounded"><span class="font-semibold">German (Intermediate)</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="py-20 fade-in-section">
+            <h2 class="text-3xl font-bold text-center text-gray-900 mb-8 flex items-center justify-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 text-blue-600"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                Projects & Presentations
+            </h2>
+            <div class="max-w-4xl mx-auto px-6 mb-12">
+                <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+                    <div class="relative w-full md:w-1/2">
+                        <input type="text" id="searchInput" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search projects...">
+                        <svg class="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                    </div>
+                    <div id="filter-buttons" class="flex flex-wrap gap-2 justify-center">
+                        <button class="filter-btn bg-blue-600 text-white px-4 py-2 rounded-lg">All</button>
+                        <button class="filter-btn bg-gray-200 text-gray-800 px-4 py-2 rounded-lg">Financial Modeling</button>
+                        <button class="filter-btn bg-gray-200 text-gray-800 px-4 py-2 rounded-lg">Business Strategy</button>
+                        <button class="filter-btn bg-gray-200 text-gray-800 px-4 py-2 rounded-lg">Data Analysis</button>
+                        <button class="filter-btn bg-gray-200 text-gray-800 px-4 py-2 rounded-lg">Application Creation</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="project-grid" class="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- SaaS Project 1 -->
+                <div class="project-card bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 flip-card" data-category="Application Creation" data-title="Contract Management SaaS">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/E2E8F0/4A5568?text=Contract+SaaS" alt="Contract Management SaaS" class="w-full h-48 object-cover">
+                            <div class="p-6 flex-grow"><h3 class="text-xl font-bold mb-2 text-gray-900">Contract Management SaaS</h3><p class="text-gray-600 mb-4">A web application to streamline contract creation, tracking, and renewal processes.</p></div>
+                            <div class="p-6 pt-0 border-t border-gray-100 flex justify-between items-center"><span class="text-xs font-semibold text-indigo-600 bg-indigo-100 px-2 py-1 rounded-full">Application Creation</span><span class="text-sm font-semibold text-gray-400">Hover to see features</span></div>
+                        </div>
+                        <div class="flip-card-back bg-indigo-600 text-white p-6 flex flex-col justify-between">
+                             <div>
+                                <h3 class="text-xl font-bold mb-4">Key Features</h3>
+                                <ul class="space-y-2">
+                                    <li class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m9 12 2 2 4-4"></path></svg>Automated Renewals</li>
+                                    <li class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>Version Control</li>
+                                    <li class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Secure Digital Signatures</li>
+                                </ul>
+                            </div>
+                            <a href="#" class="text-sm self-end font-semibold text-white hover:underline">View Details &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SaaS Project 2 -->
+                <div class="project-card bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 flip-card" data-category="Application Creation" data-title="HR Management SaaS">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/CBD5E0/4A5568?text=HR+SaaS" alt="HR Management SaaS" class="w-full h-48 object-cover">
+                            <div class="p-6 flex-grow"><h3 class="text-xl font-bold mb-2 text-gray-900">HR Management SaaS</h3><p class="text-gray-600 mb-4">An internal tool for managing employee records, payroll, and performance reviews.</p></div>
+                            <div class="p-6 pt-0 border-t border-gray-100 flex justify-between items-center"><span class="text-xs font-semibold text-indigo-600 bg-indigo-100 px-2 py-1 rounded-full">Application Creation</span><span class="text-sm font-semibold text-gray-400">Hover to see features</span></div>
+                        </div>
+                         <div class="flip-card-back bg-indigo-600 text-white p-6 flex flex-col justify-between">
+                             <div>
+                                <h3 class="text-xl font-bold mb-4">Key Features</h3>
+                                <ul class="space-y-2">
+                                    <li class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Employee Directory</li>
+                                    <li class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M15 12s-3-4-3-6 3-4 3-4"/><path d="M9 12s3 4 3 6-3 4-3 4"/></svg>Payroll Automation</li>
+                                    <li class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>Performance Tracking</li>
+                                </ul>
+                            </div>
+                             <a href="#" class="text-sm self-end font-semibold text-white hover:underline">View Details &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Model 1 -->
+                <div class="project-card bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300" data-category="Financial Modeling" data-title="Dynamic NPV Model">
+                    <div class="p-4 h-48 flex flex-col items-center justify-center bg-gray-50 text-center">
+                        <label for="investment-input" class="block text-sm font-medium text-gray-700">Initial Investment (€)</label>
+                        <input type="number" id="investment-input" value="100000" class="mt-1 block w-3/4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-center">
+                        <p class="mt-2 text-sm text-gray-500">Calculated NPV:</p>
+                        <p id="npv-output" class="text-xl font-bold text-green-600">€123,456</p>
+                    </div>
+                    <div class="p-6 flex-grow"><h3 class="text-xl font-bold mb-2 text-gray-900">Dynamic NPV Calculator</h3><p class="text-gray-600 mb-4">A simplified, interactive Net Present Value model. Change the investment to see the result.</p></div>
+                    <div class="p-6 pt-0 border-t border-gray-100 flex justify-between items-center"><span class="text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">Financial Modeling</span><a href="#" class="text-sm font-semibold text-blue-600 hover:underline">View Details &rarr;</a></div>
+                </div>
+                
+                <div class="project-card bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300" data-category="Data Analysis" data-title="Financial Dashboard with Tools">
+                    <div class="p-4 h-48 flex items-center justify-center bg-gray-50">
+                        <canvas id="financialChart"></canvas>
+                    </div>
+                    <div class="p-6 flex-grow"><h3 class="text-xl font-bold mb-2 text-gray-900">Financial Dashboard with Tools</h3><p class="text-gray-600 mb-4">An interactive dashboard providing real-time financial KPIs, with integrated tools for scenario analysis and forecasting.</p></div><div class="p-6 pt-0 border-t border-gray-100 flex justify-between items-center"><span class="text-xs font-semibold text-green-600 bg-green-100 px-2 py-1 rounded-full">Data Analysis</span><a href="#" class="text-sm font-semibold text-blue-600 hover:underline">View Dashboard &rarr;</a></div></div>
+                <div class="project-card bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300" data-category="Financial Modeling" data-title="Stock Analysis Application"><div class="p-4 h-48 flex items-center justify-center bg-gray-50"><canvas id="stockChart"></canvas></div><div class="p-6 flex-grow"><h3 class="text-xl font-bold mb-2 text-gray-900">Stock Analysis Application</h3><p class="text-gray-600 mb-4">A tool for analyzing stock performance, pulling market data via APIs to perform fundamental and technical analysis.</p></div><div class="p-6 pt-0 border-t border-gray-100 flex justify-between items-center"><span class="text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">Financial Modeling</span><a href="#" class="text-sm font-semibold text-blue-600 hover:underline">View Tool &rarr;</a></div></div>
+                <div class="project-card bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300" data-category="Financial Modeling" data-title="Excel rNPV Model">
+                    <div class="p-4 h-48 flex flex-col items-center justify-center bg-gray-50 text-center">
+                        <label for="rnpv-slider" class="block text-sm font-medium text-gray-700">Probability of Success: <span id="rnpv-slider-value">75</span>%</label>
+                        <input type="range" id="rnpv-slider" value="75" min="0" max="100" class="mt-1 block w-3/4">
+                        <p class="mt-2 text-sm text-gray-500">Risk-Adjusted NPV:</p>
+                        <p id="rnpv-output" class="text-xl font-bold text-green-600">€92,592</p>
+                    </div>
+                    <div class="p-6 flex-grow"><h3 class="text-xl font-bold mb-2 text-gray-900">rNPV Scenario Tool</h3><p class="text-gray-600 mb-4">An interactive model demonstrating how risk adjustment impacts project valuation in biotech.</p></div><div class="p-6 pt-0 border-t border-gray-100 flex justify-between items-center"><span class="text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">Financial Modeling</span><a href="#" class="text-sm font-semibold text-blue-600 hover:underline">View Details &rarr;</a></div></div>
+                <div class="project-card bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300" data-category="Data Analysis" data-title="Clinical Trials Data Analysis"><a href="https://deluxe-fox-8546eb.netlify.app/" target="_blank" class="block h-48 p-4 bg-gray-50 flex items-center justify-center"><canvas id="trialsChart"></canvas></a><div class="p-6 flex-grow"><h3 class="text-xl font-bold mb-2 text-gray-900">Clinical Trials Data Analysis</h3><p class="text-gray-600 mb-4">Analysis and visualization of clinical trial data to identify trends, assess efficacy, and support research decisions.</p></div><div class="p-6 pt-0 border-t border-gray-100 flex justify-between items-center"><span class="text-xs font-semibold text-green-600 bg-green-100 px-2 py-1 rounded-full">Data Analysis</span><a href="https://deluxe-fox-8546eb.netlify.app/" target="_blank" class="text-sm font-semibold text-blue-600 hover:underline">View Analysis &rarr;</a></div></div>
+                
+                <!-- Presentation 1 -->
+                <div class="project-card bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300" data-category="Business Strategy" data-title="PA Case Presentation">
+                    <a href="https://taupe-smakager-ed9f9a.netlify.app/" target="_blank" class="block h-48"><img id="pa-slideshow" src="https://placehold.co/600x400/DDD6FE/4A5568?text=Slide+1" alt="PA Case Presentation" class="w-full h-full object-cover"></a>
+                    <div class="p-6 flex-grow"><h3 class="text-xl font-bold mb-2 text-gray-900">PA Case Presentation</h3><p class="text-gray-600 mb-4">A strategic presentation analyzing a Physician Assistant (PA) case study for a healthcare business scenario.</p></div><div class="p-6 pt-0 border-t border-gray-100 flex justify-between items-center"><span class="text-xs font-semibold text-purple-600 bg-purple-100 px-2 py-1 rounded-full">Business Strategy</span><a href="https://taupe-smakager-ed9f9a.netlify.app/" target="_blank" class="text-sm font-semibold text-blue-600 hover:underline">View Deck &rarr;</a></div></div>
+                
+                <!-- Presentation 2 -->
+                <div class="project-card bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300" data-category="Business Strategy" data-title="GT008 Presentation">
+                    <a href="https://melodious-daifuku-ea78d3.netlify.app/" target="_blank" class="block h-48"><img id="gt008-slideshow" src="https://placehold.co/600x400/FBCFE8/4A5568?text=Slide+A" alt="GT008 Presentation" class="w-full h-full object-cover"></a>
+                    <div class="p-6 flex-grow"><h3 class="text-xl font-bold mb-2 text-gray-900">GT008 Presentation</h3><p class="text-gray-600 mb-4">A detailed presentation on the GT008 project, outlining its financial viability, market potential, and strategic importance.</p></div><div class="p-6 pt-0 border-t border-gray-100 flex justify-between items-center"><span class="text-xs font-semibold text-purple-600 bg-purple-100 px-2 py-1 rounded-full">Business Strategy</span><a href="https://melodious-daifuku-ea78d3.netlify.app/" target="_blank" class="text-sm font-semibold text-blue-600 hover:underline">View Presentation &rarr;</a></div></div>
+
+            </div>
+            <div id="loadMoreBtnContainer" class="text-center mt-12">
+                <button id="loadMoreBtn" class="bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">Load More</button>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 fade-in-section">
+            <div class="max-w-2xl mx-auto text-center px-6">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 text-blue-600"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    Get In Touch
+                </h2>
+                <p class="text-gray-600 mb-8">
+                    I am currently open to new hiring positions in **biotech, finance, accounting, project management, business development, and European politics**. Please feel free to reach out via email.
+                </p>
+                <div class="bg-gray-100 p-4 rounded-lg inline-block">
+                    <a href="mailto:mourad2081@gmail.com" class="text-lg font-semibold text-blue-600 hover:underline">
+                        mourad2081@gmail.com
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <div class="flex justify-center space-x-6 mb-4">
+                <a href="#" class="text-gray-400 hover:text-white transition duration-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg></a>
+                <a href="#" class="text-gray-400 hover:text-white transition duration-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/></svg></a>
+            </div>
+            <p class="text-gray-500">&copy; 2025 Mourad Labadi. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Modal Structure -->
+    <div id="experienceModal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="relative bg-white rounded-lg shadow-xl max-w-lg w-full m-4">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="modal-title" class="text-2xl font-bold text-gray-900"></h3>
+                    <button id="closeModalBtn" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </button>
+                </div>
+                <div id="modal-content" class="text-gray-600 space-y-4">
+                    <!-- Achievements will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="skillModal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50" aria-labelledby="skill-modal-title" role="dialog" aria-modal="true">
+        <div class="relative bg-white rounded-lg shadow-xl max-w-lg w-full m-4">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="skill-modal-title" class="text-2xl font-bold text-gray-900"></h3>
+                    <button id="closeSkillModalBtn" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </button>
+                </div>
+                <div id="skill-modal-content" class="text-gray-600 space-y-2">
+                    <!-- Related projects will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Achievement Data -->
+    <div id="pentixapharm-modal-data" class="hidden">
+        <h3 class="text-2xl font-bold text-gray-900">Pentixapharm</h3>
+        <div class="space-y-3 mt-2">
+            <div class="flex items-start gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg><span>Led automation initiatives across communication, finance, and accounting, **reducing manual reporting time by 25%**.</span></div>
+            <div class="flex items-start gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Developed dynamic and interactive presentations that contributed to a **15% increase in investor engagement**.</span></div>
+            <div class="flex items-start gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg><span>Engineered **5+ comprehensive financial models**, including budgeting, 20-year forecasting, and rNPV analysis for various R&D projects.</span></div>
+        </div>
+    </div>
+    <div id="crymirotech-modal-data" class="hidden">
+        <h3 class="text-2xl font-bold text-gray-900">Crymirotech</h3>
+        <div class="space-y-3 mt-2">
+            <div class="flex items-start gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"><path d="M15 3h6v6"/><path d="M19 19 9 9"/><path d="M9 3H3v6"/></svg><span>Developed the company's international expansion strategy, identifying **3 priority markets**.</span></div>
+            <div class="flex items-start gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"><path d="M2 12h20"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20z"/></svg><span>Conducted in-depth market analysis for new regions, providing the data for a successful launch.</span></div>
+        </div>
+    </div>
+    <div id="embassy-modal-data" class="hidden">
+        <h3 class="text-2xl font-bold text-gray-900">Embassy of Serbia</h3>
+        <div class="space-y-3 mt-2">
+            <div class="flex items-start gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3-3-3s-3-1-3-3a7 7 0 0 0-14 0c0 2 1 3 3 3s3 1 3 3a7 7 0 0 0 7 7z"/><path d="M12 10.5V12"/><path d="M12 13.5V15"/></svg><span>Assisted in negotiating economic deals between Algeria and Serbia valued at over **€10 million**.</span></div>
+            <div class="flex items-start gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m10 15-2 2 2 2"/><path d="m14 15 2 2-2 2"/></svg><span>Championed a "paperless" initiative, leading to a **40% reduction in paper usage**.</span></div>
+            <div class="flex items-start gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-1"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg><span>Improved efficiency in the purchasing and procurement process by **20%**.</span></div>
+        </div>
+    </div>
+
+    <script>
+        // --- Mobile Menu Toggle ---
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // --- Smooth Scrolling ---
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+
+        // --- Experience Modal Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const experienceItems = document.querySelectorAll('.experience-item');
+            const expModal = document.getElementById('experienceModal');
+            const expModalTitle = document.getElementById('modal-title');
+            const expModalContent = document.getElementById('modal-content');
+            const closeExpModalBtn = document.getElementById('closeModalBtn');
+
+            experienceItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const targetId = item.dataset.modalTarget;
+                    const dataContainerId = targetId + "-data";
+                    const dataContainer = document.getElementById(dataContainerId);
+                    
+                    if (dataContainer) {
+                        const title = dataContainer.querySelector('h3').innerText;
+                        const achievements = dataContainer.querySelector('div').innerHTML;
+                        
+                        expModalTitle.innerText = title;
+                        expModalContent.innerHTML = achievements;
+                        expModal.classList.remove('hidden');
+                        expModal.classList.add('flex');
+                    }
+                });
+            });
+
+            const closeExpModal = () => {
+                expModal.classList.add('hidden');
+                expModal.classList.remove('flex');
+            };
+
+            closeExpModalBtn.addEventListener('click', closeExpModal);
+            expModal.addEventListener('click', (event) => {
+                if (event.target === expModal) {
+                    closeExpModal();
+                }
+            });
+            
+            // --- Skill Modal Logic ---
+            const skillItems = document.querySelectorAll('.skill-item');
+            const skillModal = document.getElementById('skillModal');
+            const skillModalTitle = document.getElementById('skill-modal-title');
+            const skillModalContent = document.getElementById('skill-modal-content');
+            const closeSkillModalBtn = document.getElementById('closeSkillModalBtn');
+            const allProjectCards = Array.from(document.querySelectorAll('#project-grid .project-card'));
+
+            skillItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const skillCategory = item.dataset.skill;
+                    const skillName = item.querySelector('span').textContent;
+                    
+                    const relatedProjects = allProjectCards.filter(card => card.dataset.category === skillCategory);
+                    
+                    skillModalTitle.innerText = `Projects using ${skillName}`;
+                    
+                    if (relatedProjects.length > 0) {
+                        let content = '<ul class="list-disc list-inside">';
+                        relatedProjects.forEach(project => {
+                            const projectName = project.dataset.title;
+                            content += `<li class="mb-1">${projectName}</li>`;
+                        });
+                        content += '</ul>';
+                        skillModalContent.innerHTML = content;
+                    } else {
+                        skillModalContent.innerHTML = '<p>No specific projects to show for this skill yet.</p>';
+                    }
+                    
+                    skillModal.classList.remove('hidden');
+                    skillModal.classList.add('flex');
+                });
+            });
+
+            const closeSkillModal = () => {
+                skillModal.classList.add('hidden');
+                skillModal.classList.remove('flex');
+            };
+
+            closeSkillModalBtn.addEventListener('click', closeSkillModal);
+            skillModal.addEventListener('click', (event) => {
+                if (event.target === skillModal) {
+                    closeSkillModal();
+                }
+            });
+        });
+
+        // --- Project Filtering and Load More Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const projectGrid = document.getElementById('project-grid');
+            const allProjectCards = Array.from(projectGrid.children);
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const loadMoreBtnContainer = document.getElementById('loadMoreBtnContainer');
+            let visibleProjects = 9; // Start with 9 projects visible
+
+            const updateVisibleCards = () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                const activeCategoryButton = document.querySelector('.filter-btn.bg-blue-600');
+                const activeCategory = activeCategoryButton ? activeCategoryButton.innerText : 'All';
+
+                const filteredCards = allProjectCards.filter(card => {
+                    const title = card.dataset.title.toLowerCase();
+                    const category = card.dataset.category;
+                    const matchesSearch = title.includes(searchTerm);
+                    const matchesCategory = activeCategory === 'All' || category === activeCategory;
+                    return matchesSearch && matchesCategory;
+                });
+                
+                allProjectCards.forEach(card => card.style.display = 'none');
+                
+                filteredCards.slice(0, visibleProjects).forEach(card => {
+                    card.style.display = 'flex';
+                });
+
+                if (filteredCards.length > visibleProjects) {
+                    loadMoreBtn.style.display = 'inline-block';
+                } else {
+                    loadMoreBtn.style.display = 'none';
+                }
+                 if (allProjectCards.length <= 9) {
+                    loadMoreBtnContainer.style.display = 'none';
+                }
+            };
+            
+            updateVisibleCards();
+
+            searchInput.addEventListener('input', () => {
+                visibleProjects = 9;
+                updateVisibleCards();
+            });
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('bg-blue-600', 'text-white');
+                        btn.classList.add('bg-gray-200', 'text-gray-800');
+                    });
+                    button.classList.add('bg-blue-600', 'text-white');
+                    button.classList.remove('bg-gray-200', 'text-gray-800');
+                    visibleProjects = 9;
+                    updateVisibleCards();
+                });
+            });
+
+            loadMoreBtn.addEventListener('click', () => {
+                visibleProjects += 3;
+                updateVisibleCards();
+            });
+        });
+
+        // --- Scroll Animation Logic ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        });
+
+        const sections = document.querySelectorAll('.fade-in-section');
+        sections.forEach((el) => observer.observe(el));
+
+        // --- Chart.js Logic ---
+        const financialChartCtx = document.getElementById('financialChart').getContext('2d');
+        const financialChart = new Chart(financialChartCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                datasets: [{
+                    label: 'Revenue (in €M)',
+                    data: [12, 19, 15, 22],
+                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Quarterly Revenue Growth'
+                    }
+                }
+            }
+        });
+        
+        const trialsChartCtx = document.getElementById('trialsChart').getContext('2d');
+        const trialsChart = new Chart(trialsChartCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Phase 1', 'Phase 2', 'Phase 3'],
+                datasets: [{
+                    data: [30, 50, 20],
+                    backgroundColor: ['#93c5fd', '#60a5fa', '#3b82f6'],
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Patient Demographics'
+                    }
+                }
+            }
+        });
+
+        const stockChartCtx = document.getElementById('stockChart').getContext('2d');
+        const stockChart = new Chart(stockChartCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Stock Price',
+                    data: [120, 125, 122, 128, 135, 132],
+                    borderColor: 'rgba(22, 163, 74, 1)',
+                    backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Simulated Stock Performance'
+                    }
+                }
+            }
+        });
+
+        setInterval(() => {
+            const lastData = stockChart.data.datasets[0].data[stockChart.data.datasets[0].data.length - 1];
+            const newData = lastData + (Math.random() - 0.5) * 5;
+            stockChart.data.datasets[0].data.push(newData);
+            stockChart.data.datasets[0].data.shift();
+            stockChart.update('quiet');
+        }, 2000);
+
+
+        // --- NPV Calculator Logic ---
+        const investmentInput = document.getElementById('investment-input');
+        const npvOutput = document.getElementById('npv-output');
+        
+        const calculateNPV = () => {
+            const initialInvestment = parseFloat(investmentInput.value) || 0;
+            // Simplified demo values
+            const cashFlow = 50000;
+            const discountRate = 0.1;
+            const years = 5;
+
+            let npv = 0;
+            for (let i = 1; i <= years; i++) {
+                npv += cashFlow / Math.pow((1 + discountRate), i);
+            }
+            const finalNPV = npv - initialInvestment;
+
+            npvOutput.textContent = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(finalNPV);
+            npvOutput.style.color = finalNPV >= 0 ? '#16a34a' : '#dc2626';
+        };
+
+        investmentInput.addEventListener('input', calculateNPV);
+        calculateNPV(); // Initial calculation
+
+        // --- rNPV Calculator Logic ---
+        const rnpvSlider = document.getElementById('rnpv-slider');
+        const rnpvSliderValue = document.getElementById('rnpv-slider-value');
+        const rnpvOutput = document.getElementById('rnpv-output');
+        
+        const calculateRNPV = () => {
+            const probability = parseFloat(rnpvSlider.value) / 100;
+            rnpvSliderValue.textContent = rnpvSlider.value;
+            // Simplified demo values from the other calculator
+            const initialInvestment = 100000;
+            const cashFlow = 50000;
+            const discountRate = 0.1;
+            const years = 5;
+            let npv = 0;
+            for (let i = 1; i <= years; i++) {
+                npv += cashFlow / Math.pow((1 + discountRate), i);
+            }
+            const finalNPV = (npv * probability) - initialInvestment;
+
+            rnpvOutput.textContent = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(finalNPV);
+            rnpvOutput.style.color = finalNPV >= 0 ? '#16a34a' : '#dc2626';
+        };
+
+        rnpvSlider.addEventListener('input', calculateRNPV);
+        calculateRNPV();
+
+
+        // --- Slideshow Logic ---
+        const paSlides = [
+            'https://placehold.co/600x400/DDD6FE/4A5568?text=PA+Slide+1',
+            'https://placehold.co/600x400/C4B5FD/4A5568?text=PA+Slide+2',
+            'https://placehold.co/600x400/A78BFA/4A5568?text=PA+Slide+3'
+        ];
+        const gt008Slides = [
+            'https://placehold.co/600x400/FBCFE8/4A5568?text=GT008+Slide+A',
+            'https://placehold.co/600x400/F9A8D4/4A5568?text=GT008+Slide+B',
+            'https://placehold.co/600x400/F472B6/4A5568?text=GT008+Slide+C'
+        ];
+        let paIndex = 0;
+        let gt008Index = 0;
+        const paImage = document.getElementById('pa-slideshow');
+        const gt008Image = document.getElementById('gt008-slideshow');
+
+        setInterval(() => {
+            paIndex = (paIndex + 1) % paSlides.length;
+            paImage.src = paSlides[paIndex];
+        }, 3000);
+
+        setInterval(() => {
+            gt008Index = (gt008Index + 1) % gt008Slides.length;
+            gt008Image.src = gt008Slides[gt008Index];
+        }, 3000);
+        
+        // --- Skill Cloud Tooltip Logic ---
+        const skillCloudItems = document.querySelectorAll('.skill-cloud-item');
+        const skillCloudTooltip = document.getElementById('skill-cloud-tooltip');
+
+        skillCloudItems.forEach(item => {
+            item.addEventListener('mousemove', (e) => {
+                skillCloudTooltip.textContent = item.dataset.description;
+                skillCloudTooltip.style.opacity = '1';
+                // Position tooltip relative to the item, not the whole page
+                const rect = item.getBoundingClientRect();
+                const containerRect = item.parentElement.getBoundingClientRect();
+                skillCloudTooltip.style.left = `${rect.left - containerRect.left + rect.width / 2}px`;
+                skillCloudTooltip.style.top = `${rect.top - containerRect.top - skillCloudTooltip.offsetHeight - 5}px`;
+                skillCloudTooltip.style.transform = 'translateX(-50%)';
+            });
+            item.addEventListener('mouseleave', () => {
+                skillCloudTooltip.style.opacity = '0';
+            });
+        });
+
+        // --- Day in the Life Animation on Scroll ---
+        const workflowObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const steps = entry.target.querySelectorAll('.workflow-step');
+                    steps.forEach((step, index) => {
+                        setTimeout(() => {
+                            step.style.opacity = '1';
+                            step.style.transform = 'translateY(0)';
+                        }, index * 300);
+                    });
+                    workflowObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        const workflowAnimationEl = document.getElementById('workflow-animation');
+        if(workflowAnimationEl) {
+            workflowObserver.observe(workflowAnimationEl);
+        }
+
+    </script>
+</body>
+</html>
